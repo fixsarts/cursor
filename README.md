@@ -22,10 +22,10 @@ Cursor langsung aktif.
 ```html
 <script
   src="https://fixsarts.github.io/cursor/cursor.js"
-  data-color="#3330ff"
+  data-color="#ff3b30"
   data-size="18"
   data-ripple="true"
-  data-ripple-color="#3330ff"
+  data-ripple-color="#ff3b30"
   data-ripple-size="90"
   data-ripple-duration="600"
   data-hover-effect="true"
@@ -47,7 +47,7 @@ Untuk mengendalikan sendiri kapan mulai: `data-auto="false"` lalu `FixsCursor.in
 ```text
 cursor/
 ├── cursor.js            versi terbaru (URL tetap)
-├── releases/1.0.0/      salinan beku tiap versi
+├── releases/            salinan beku tiap versi
 ├── demo/                halaman demo (memakai ../cursor.js)
 ├── docs/configuration.md
 ├── README.md
@@ -62,14 +62,14 @@ cursor/
 
 ## Versi dan update
 - **Latest**: `https://fixsarts.github.io/cursor/cursor.js`. Website pengguna otomatis dapat pembaruan setelah `cursor.js` diganti (GitHub Pages menyimpan cache sekitar 10 menit).
-- **Versi tetap (Pages)**: `https://fixsarts.github.io/cursor/releases/1.0.0/cursor.js`
+- **Versi tetap (Pages)**: `https://fixsarts.github.io/cursor/releases/1.0.1/cursor.js`
 - **Rilis baru**: ubah `VERSION` dan komentar versi di `cursor.js`, salin ke `releases/<versi>/cursor.js`, commit, lalu buat tag Git `v<versi>`.
 - Gunakan versi tetap untuk website penting, latest untuk website yang ingin selalu terbaru.
 
 ## CDN (jsDelivr)
-jsDelivr mengambil langsung dari repo GitHub (perlu tag rilis, mis. `v1.0.0`):
+jsDelivr mengambil langsung dari repo GitHub (perlu tag rilis, mis. `v1.0.1`):
 ```html
-<script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1.0.0/cursor.js"></script> <!-- versi tetap -->
+<script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1.0.1/cursor.js"></script> <!-- versi tetap -->
 <script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1/cursor.js"></script>     <!-- terbaru 1.x -->
 ```
 Jangan pakai `@main` di produksi (cache bisa lama).
@@ -80,6 +80,9 @@ Jangan pakai `@main` di produksi (cache bisa lama).
 - **Perubahan tidak terlihat**: cache. Muat ulang paksa (Ctrl+Shift+R) atau pakai URL versi.
 - **Efek hover tidak muncul di elemen kustom**: tambahkan atribut `data-cursor-hover` atau atur `data-selector`.
 - **Cursor tertutup elemen lain**: naikkan `data-z-index`, dan pastikan tidak ada elemen `popover`/`dialog` modal yang menutupinya (lapisan top-layer browser selalu di atas).
+
+- **Warna masih lama (mis. merah)**: hampir selalu cache atau file lama. Buka Console, ketik `FixsCursor.version` (harus `1.0.1`) dan `FixsCursor.options.color` (harus `#3330ff`). Kalau beda, muat ulang paksa (Ctrl+Shift+R) atau tambahkan `?v=2` di URL script. Pastikan juga tidak ada atribut `data-color` lama di script tag, dan tidak ada library cursor Joomax di halaman yang sama (hanya satu cursor yang aktif).
+- **Cursor tidak muncul di perangkat tertentu**: tambahkan `data-force="true"` untuk menguji.
 
 ## Batasan
 - Tidak bekerja di dalam `<iframe>` (pasang script di tiap halaman iframe yang sama origin).

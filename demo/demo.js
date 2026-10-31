@@ -19,5 +19,8 @@
     setTimeout(() => (e.target.textContent = "Salin script"), 1800);
   });
   document.querySelector('a[href="#demo-form"]').addEventListener("click", (e) => { e.preventDefault(); document.getElementById("demo-form").scrollIntoView({ behavior: "smooth" }); });
+  const st = document.getElementById("status");
+  st.textContent = C ? `FixsCursor v${C.version} termuat. Warna aktif: ${C.options.color}` : "Library gagal dimuat. Cek path ../cursor.js dan cache browser (Ctrl+Shift+R).";
   render();
+  if (C) st.textContent = `FixsCursor v${C.version} termuat. Warna aktif: ${C.options.color}`;
 })();

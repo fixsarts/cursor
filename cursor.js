@@ -1,14 +1,14 @@
-/*! fixs.arts Custom Cursor v1.0.0 | MIT | https://github.com/fixsarts/cursor */
+/*! fixs.arts Custom Cursor v1.0.1 | MIT | https://github.com/fixsarts/cursor */
 (() => {
   "use strict";
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   if (window.FixsCursor && window.FixsCursor.version) return; // aman bila dimuat dua kali
 
   const SCRIPT = document.currentScript;
   const DEFAULTS = {
     color: "#3330ff", size: 18, smoothing: 0.22, zIndex: 2147483647,
     ripple: true, rippleColor: "", rippleSize: 90, rippleDuration: 600, rippleWidth: 2,
-    hoverEffect: true, hoverScale: 1.8, hideNativeCursor: false,
+    hoverEffect: true, hoverScale: 1.8, hideNativeCursor: false, force: false,
     selector: 'a[href],button,summary,label[for],select,[role=button],[role=link],[role=tab],[data-cursor-hover],input[type=button],input[type=submit],input[type=reset],input[type=checkbox],input[type=radio],input[type=range]'
   };
   const TEXT = 'input:not([type=button]):not([type=submit]):not([type=reset]):not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]):not([type=image]),textarea,[contenteditable=""],[contenteditable="true"]';
@@ -27,7 +27,11 @@
 
   // ---- Util ----
   const mqFine = matchMedia("(any-hover: hover) and (any-pointer: fine)");
+  const mqTouch = matchMedia("(hover: none) and (pointer: coarse)");
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
+  // addEventListener di MediaQueryList tidak ada di Safari lama
+  const listen = (mq, fn) => { try { mq.addEventListener("change", fn); } catch (e) { try { mq.addListener(fn); } catch (e2) {} } };
+  const unlisten = (mq, fn) => { try { mq.removeEventListener("change", fn); } catch (e) { try { mq.removeListener(fn); } catch (e2) {} } };
   const coerce = (k, v) => {
     const d = DEFAULTS[k];
     if (typeof d === "boolean") return !(v === false || v === "false" || v === "0" || v === "off");
@@ -135,9 +139,16 @@
     document.documentElement.classList.remove("fx-cursor-hide");
     host && host.remove(); host = shadow = pos = null; seen = shown = hover = inText = false;
   };
-  const sync = () => { if (started && enabled && mqFine.matches) mount(); else unmount(); };
+  const supported = () => opts.force || mqFine.matches || !mqTouch.matches;
+  const sync = () => {
+    if (started && enabled && supported()) {
+      // satu cursor per halaman: jangan menumpuk dengan library cursor Joomax/fixs.arts lain
+      if (!mounted && document.querySelector("[data-joomax-cursor],[data-fixs-cursor]")) { console.warn("[FixsCursor] Ada cursor library lain di halaman ini, FixsCursor tidak diaktifkan."); return; }
+      mount();
+    } else unmount();
+  };
   const onMq = () => sync();
-  mqFine.addEventListener("change", onMq);
+  listen(mqFine, onMq); listen(mqTouch, onMq);
 
   // ---- API publik ----
   const api = {
@@ -148,8 +159,8 @@
     enable() { enabled = true; sync(); return api; },
     disable() { enabled = false; sync(); return api; },
     ripple(cx, cy, o) { ripple(cx, cy, o); return api; },
-    destroy() { started = false; unmount(); mqFine.removeEventListener("change", onMq); delete window.FixsCursor; }
+    destroy() { started = false; unmount(); unlisten(mqFine, onMq); unlisten(mqTouch, onMq); delete window.FixsCursor; }
   };
   window.FixsCursor = api;
-  if (!SCRIPT || SCRIPT.dataset.auto !== "false") api.init();
+  if (!SCRIPT || SCRIPT.dataset.auto !== "false") { try { api.init(); } catch (e) { console.error("[FixsCursor] gagal memulai:", e); } }
 })();
