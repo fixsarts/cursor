@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fixs.arts Custom Cursor: Demo</title>
+<link rel="stylesheet" href="style.css">
+<!-- Demo memakai library utama yang sama persis dengan yang dipasang di website lain -->
+<script src="../cursor.js"></script>
+</head>
+<body>
+<header class="top"><b>Custom Cursor</b><a href="https://github.com/fixsarts/cursor">GitHub</a></header>
+
+<main>
+  <section class="hero">
+    <h1>Cursor kustom untuk website mana pun.</h1>
+    <p>Satu script tag. Gerakkan mouse, klik di mana saja, dan arahkan ke tombol atau link.</p>
+    <div class="row"><button class="btn primary" type="button">Tombol utama</button><button class="btn" type="button">Tombol biasa</button><a class="btn" href="#demo-form">Link</a><button class="btn" type="button" disabled>Nonaktif</button></div>
+  </section>
+
+  <div class="cols">
+    <section class="card" id="panel" aria-labelledby="ph">
+      <h2 id="ph">Konfigurasi</h2>
+      <label>Warna cursor <input type="color" data-k="color" value="#3330ff"></label>
+      <label>Ukuran <output></output><input type="range" data-k="size" min="6" max="48" value="18"></label>
+      <label>Kehalusan gerak <output></output><input type="range" data-k="smoothing" min="0.05" max="1" step="0.01" value="0.22"></label>
+      <label>Warna ripple <input type="color" data-k="rippleColor" value="#3330ff"></label>
+      <label>Ukuran ripple <output></output><input type="range" data-k="rippleSize" min="30" max="240" value="90"></label>
+      <label>Durasi ripple (ms) <output></output><input type="range" data-k="rippleDuration" min="200" max="1500" step="50" value="600"></label>
+      <label>Tebal garis ripple <output></output><input type="range" data-k="rippleWidth" min="1" max="8" value="2"></label>
+      <label>Skala hover <output></output><input type="range" data-k="hoverScale" min="1" max="4" step="0.1" value="1.8"></label>
+      <label class="chk"><input type="checkbox" data-k="ripple" checked> Click ripple</label>
+      <label class="chk"><input type="checkbox" data-k="hoverEffect" checked> Efek hover</label>
+      <label class="chk"><input type="checkbox" data-k="hideNativeCursor"> Sembunyikan cursor bawaan</label>
+      <div class="row"><button class="btn" type="button" id="reset">Reset</button><button class="btn primary" type="button" id="copy">Salin script</button></div>
+    </section>
+
+    <section class="card" id="demo-form" aria-labelledby="fh">
+      <h2 id="fh">Uji input</h2>
+      <p class="muted">Cursor bawaan tetap muncul di kolom teks agar mengetik tetap nyaman.</p>
+      <label>Nama <input type="text" placeholder="Ketik di sini"></label>
+      <label>Pesan <textarea rows="3" placeholder="Pesan"></textarea></label>
+      <label>Pilihan <select><option>Satu</option><option>Dua</option></select></label>
+      <label class="chk"><input type="checkbox"> Centang saya</label>
+      <h2>Kode pemasangan</h2>
+      <pre id="code" aria-live="polite"></pre>
+    </section>
+  </div>
+</main>
+<script src="demo.js"></script>
+</body>
+</html>
