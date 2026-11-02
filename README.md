@@ -1,10 +1,12 @@
 # fixs.arts Custom Cursor
 
-Library JavaScript ringan (±8 KB, tanpa dependency) untuk **cursor lingkaran kustom + efek ripple saat klik**. Pasang di website mana pun dengan satu script tag.
+Library JavaScript ringan (±18 KB, tanpa dependency) untuk **cursor lingkaran kustom, efek transparan/glass, ripple saat klik, dan trail ala kuas/stylus (jejak gradasi yang memudar seperti ekor roket)**. Pasang di website mana pun dengan satu script tag.
 
 Demo: https://fixsarts.github.io/cursor/demo/
 
 ## Fitur
+- **Trail menggambar**: goresan halus mengikuti cursor, gradasi warna bebas (1 sampai banyak warna), runcing di ujung, glow, efek tekanan stylus, lalu memudar dan hilang sendiri. Tersedia preset `rocket`, `ink`, `neon`, `aurora`.
+- **Transparan dan glass**: atur `opacity`, `hoverOpacity`, dan `blur` (backdrop blur) pada lingkaran.
 - Lingkaran yang mengikuti mouse dengan halus (warna dan ukuran bebas), panah bawaan tetap terlihat (bisa disembunyikan).
 - Ripple saat klik, beberapa klik berurutan aman, elemen dihapus setelah animasi.
 - Efek hover (cursor membesar) di link, tombol, dan elemen interaktif.
@@ -18,14 +20,31 @@ Tambahkan sebelum `</body>` (atau di `<head>`):
 ```
 Cursor langsung aktif.
 
+## Trail dalam satu baris
+```html
+<script src="https://fixsarts.github.io/cursor/cursor.js" data-preset="rocket"></script>
+```
+Ganti `rocket` dengan `ink`, `neon`, `aurora`, atau `glass`. Atau atur sendiri:
+```html
+<script
+  src="https://fixsarts.github.io/cursor/cursor.js"
+  data-trail="true"
+  data-trail-colors="#ffd23f,#ff7a00,#e01e37,#4a0a3d"
+  data-trail-size="18"
+  data-trail-duration="850"
+  data-opacity="0.5"
+  data-blur="4"
+></script>
+```
+
 ## Contoh konfigurasi
 ```html
 <script
   src="https://fixsarts.github.io/cursor/cursor.js"
-  data-color="#ff3b30"
+  data-color="#3330ff"
   data-size="18"
   data-ripple="true"
-  data-ripple-color="#ff3b30"
+  data-ripple-color="#3330ff"
   data-ripple-size="90"
   data-ripple-duration="600"
   data-hover-effect="true"
@@ -37,6 +56,7 @@ Daftar lengkap opsi, JavaScript API, dan perilaku otomatis: [docs/configuration.
 ## JavaScript API (ringkas)
 ```js
 FixsCursor.configure({ color: "#0a84ff", size: 24 }); // ubah langsung
+FixsCursor.preset("neon");                            // ganti gaya
 FixsCursor.disable(); FixsCursor.enable();
 FixsCursor.ripple(200, 200);                           // ripple manual
 FixsCursor.destroy();
@@ -47,7 +67,8 @@ Untuk mengendalikan sendiri kapan mulai: `data-auto="false"` lalu `FixsCursor.in
 ```text
 cursor/
 ├── cursor.js            versi terbaru (URL tetap)
-├── releases/            salinan beku tiap versi
+├── releases/1.0.0/      salinan beku tiap versi
+├── releases/1.1.0/
 ├── demo/                halaman demo (memakai ../cursor.js)
 ├── docs/configuration.md
 ├── README.md
@@ -62,27 +83,25 @@ cursor/
 
 ## Versi dan update
 - **Latest**: `https://fixsarts.github.io/cursor/cursor.js`. Website pengguna otomatis dapat pembaruan setelah `cursor.js` diganti (GitHub Pages menyimpan cache sekitar 10 menit).
-- **Versi tetap (Pages)**: `https://fixsarts.github.io/cursor/releases/1.0.1/cursor.js`
+- **Versi tetap (Pages)**: `https://fixsarts.github.io/cursor/releases/1.1.0/cursor.js`
 - **Rilis baru**: ubah `VERSION` dan komentar versi di `cursor.js`, salin ke `releases/<versi>/cursor.js`, commit, lalu buat tag Git `v<versi>`.
 - Gunakan versi tetap untuk website penting, latest untuk website yang ingin selalu terbaru.
 
 ## CDN (jsDelivr)
-jsDelivr mengambil langsung dari repo GitHub (perlu tag rilis, mis. `v1.0.1`):
+jsDelivr mengambil langsung dari repo GitHub (perlu tag rilis, mis. `v1.0.0`):
 ```html
-<script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1.0.1/cursor.js"></script> <!-- versi tetap -->
+<script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1.1.0/cursor.js"></script> <!-- versi tetap -->
 <script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1/cursor.js"></script>     <!-- terbaru 1.x -->
 ```
 Jangan pakai `@main` di produksi (cache bisa lama).
 
 ## Troubleshooting
 - **Cursor tidak muncul**: cek tab Network (script 404?), pastikan Pages aktif, dan pakai mouse (bukan layar sentuh). Ketik `FixsCursor` di Console untuk memastikan terpasang.
+- **Trail tidak muncul**: pastikan `data-trail="true"` atau memakai `data-preset`, dan `prefers-reduced-motion` tidak aktif (trail ikut dimatikan).
 - **Tidak ada ripple**: `prefers-reduced-motion` aktif di sistem, atau `data-ripple="false"`.
 - **Perubahan tidak terlihat**: cache. Muat ulang paksa (Ctrl+Shift+R) atau pakai URL versi.
 - **Efek hover tidak muncul di elemen kustom**: tambahkan atribut `data-cursor-hover` atau atur `data-selector`.
 - **Cursor tertutup elemen lain**: naikkan `data-z-index`, dan pastikan tidak ada elemen `popover`/`dialog` modal yang menutupinya (lapisan top-layer browser selalu di atas).
-
-- **Warna masih lama (mis. merah)**: hampir selalu cache atau file lama. Buka Console, ketik `FixsCursor.version` (harus `1.0.1`) dan `FixsCursor.options.color` (harus `#3330ff`). Kalau beda, muat ulang paksa (Ctrl+Shift+R) atau tambahkan `?v=2` di URL script. Pastikan juga tidak ada atribut `data-color` lama di script tag, dan tidak ada library cursor Joomax di halaman yang sama (hanya satu cursor yang aktif).
-- **Cursor tidak muncul di perangkat tertentu**: tambahkan `data-force="true"` untuk menguji.
 
 ## Batasan
 - Tidak bekerja di dalam `<iframe>` (pasang script di tiap halaman iframe yang sama origin).
@@ -90,6 +109,10 @@ Jangan pakai `@main` di produksi (cache bisa lama).
 - `dialog.showModal()` dan elemen top-layer menutupi cursor kustom.
 - Perangkat hibrida: hanya gerakan mouse yang diikuti, sentuhan diabaikan.
 - Ripple memerlukan Web Animations API (semua browser modern).
+
+## Changelog
+- **1.1.0**: trail menggambar (gradasi, glow, tekanan, mode `age`/`flow`), preset, `opacity`/`hoverOpacity`/`blur`/`dot`, `rippleOpacity`, API `preset()`/`clearTrail()`. Semua opsi lama tetap kompatibel.
+- **1.0.0**: rilis pertama.
 
 ## Lisensi
 MIT
