@@ -18,13 +18,14 @@
     <div class="row"><button class="btn primary" type="button">Tombol utama</button><button class="btn" type="button">Tombol biasa</button><a class="btn" href="#demo-form">Link</a><button class="btn" type="button" disabled>Nonaktif</button></div>
   </section>
 
-  <section class="stage" aria-label="Area uji trail">
-    <span>Gerakkan mouse di area gelap ini</span>
+  <section class="stage" aria-label="Area uji efek">
+    <span>Gerakkan dan klik di area gelap ini</span>
   </section>
 
   <div class="cols">
     <section class="card" id="panel" aria-labelledby="ph">
       <h2 id="ph">Konfigurasi</h2>
+      <p class="note" id="rm-note" hidden>Sistem lu mengaktifkan <b>reduce motion</b>, jadi trail dan partikel dimatikan (ripple tampil sebagai fade statis). <button class="chip" type="button" id="rm-ignore">Abaikan untuk demo ini</button></p>
 
       <h3>Preset</h3>
       <div class="chips" id="presets"></div>
@@ -40,9 +41,13 @@
       <label class="chk"><input type="checkbox" data-k="dot" checked> Tampilkan lingkaran</label>
       <label class="chk"><input type="checkbox" data-k="hoverEffect" checked> Efek hover</label>
       <label class="chk"><input type="checkbox" data-k="hideNativeCursor"> Sembunyikan cursor bawaan</label>
+      <label>Reduce motion sistem
+        <select data-k="reducedMotion"><option value="respect">Ikuti sistem</option><option value="ignore">Abaikan (selalu tampil)</option></select>
+      </label>
 
-      <h3>Trail (efek menggambar)</h3>
+      <h3>Trail (kuas)</h3>
       <label class="chk"><input type="checkbox" data-k="trail"> Aktifkan trail</label>
+      <label>Panjang kuas (px, 0 = bebas) <output></output><input type="range" data-k="trailLength" min="0" max="1000" step="10" value="0"></label>
       <div class="stops-head">Gradasi warna <output id="stops-out"></output></div>
       <div class="gradbar" id="gradbar"></div>
       <div class="stops" id="stops">
@@ -64,17 +69,38 @@
       <label>Glow <output></output><input type="range" data-k="trailGlow" min="0" max="1" step="0.05" value="0.4"></label>
       <label>Tekanan kuas (cepat = tipis) <output></output><input type="range" data-k="trailPressure" min="0" max="1" step="0.05" value="0.3"></label>
       <label>Kecepatan aliran warna <output></output><input type="range" data-k="trailFlowSpeed" min="0.1" max="4" step="0.1" value="1"></label>
-      <label>Blend
+      <label>Blend (trail dan partikel)
         <select data-k="trailBlend"><option value="normal">Normal</option><option value="additive">Additive (menyala)</option></select>
       </label>
 
-      <h3>Ripple klik</h3>
-      <label>Warna ripple <input type="color" data-k="rippleColor" value="#3330ff"></label>
-      <label>Ukuran ripple <output></output><input type="range" data-k="rippleSize" min="30" max="240" value="90"></label>
-      <label>Durasi ripple (ms) <output></output><input type="range" data-k="rippleDuration" min="200" max="1500" step="50" value="600"></label>
-      <label>Tebal garis ripple <output></output><input type="range" data-k="rippleWidth" min="1" max="8" value="2"></label>
-      <label>Opacity ripple <output></output><input type="range" data-k="rippleOpacity" min="0.05" max="1" step="0.01" value="0.8"></label>
-      <label class="chk"><input type="checkbox" data-k="ripple" checked> Click ripple</label>
+      <h3>Percikan partikel</h3>
+      <label class="chk"><input type="checkbox" data-k="sparks"> Aktifkan percikan saat bergerak</label>
+      <label>Bentuk
+        <select data-k="sparkShape"><option value="dot">Titik</option><option value="spark">Garis api</option><option value="star">Bintang</option><option value="mix">Campur</option></select>
+      </label>
+      <label>Jumlah per 100px <output></output><input type="range" data-k="sparkRate" min="1" max="30" step="1" value="8"></label>
+      <label>Ukuran <output></output><input type="range" data-k="sparkSize" min="1" max="14" step="0.5" value="3"></label>
+      <label>Umur (ms) <output></output><input type="range" data-k="sparkLife" min="200" max="2000" step="50" value="700"></label>
+      <label>Kecepatan lontar <output></output><input type="range" data-k="sparkSpeed" min="0" max="8" step="0.1" value="3"></label>
+      <label>Sebaran sudut (derajat) <output></output><input type="range" data-k="sparkSpread" min="0" max="180" step="5" value="70"></label>
+      <label>Gravitasi (minus = naik) <output></output><input type="range" data-k="sparkGravity" min="-1" max="1" step="0.05" value="0.3"></label>
+
+      <h3>Efek klik</h3>
+      <label class="chk"><input type="checkbox" data-k="ripple" checked> Aktifkan efek klik</label>
+      <div class="chips" id="fxchips"></div>
+      <label>Warna cincin <input type="color" data-k="rippleColor" value="#3330ff"></label>
+      <div class="stops-head">Palet partikel klik</div>
+      <div class="stops" id="cstops">
+        <input type="color" data-cstop value="#ff6b00" aria-label="Palet 1">
+        <input type="color" data-cstop value="#e01e37" aria-label="Palet 2">
+        <input type="color" data-cstop value="#ffd23f" aria-label="Palet 3">
+      </div>
+      <label>Ukuran efek <output></output><input type="range" data-k="rippleSize" min="30" max="240" value="90"></label>
+      <label>Durasi (ms) <output></output><input type="range" data-k="rippleDuration" min="200" max="1500" step="50" value="600"></label>
+      <label>Tebal garis cincin <output></output><input type="range" data-k="rippleWidth" min="1" max="8" value="2"></label>
+      <label>Opacity efek <output></output><input type="range" data-k="rippleOpacity" min="0.05" max="1" step="0.01" value="0.8"></label>
+      <label>Jumlah partikel <output></output><input type="range" data-k="clickCount" min="4" max="60" step="1" value="16"></label>
+      <label>Skala saat ditekan (press) <output></output><input type="range" data-k="pressScale" min="0.2" max="1" step="0.05" value="0.6"></label>
 
       <div class="row"><button class="btn" type="button" id="reset">Reset</button><button class="btn primary" type="button" id="copy">Salin script</button></div>
     </section>

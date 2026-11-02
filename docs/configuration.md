@@ -38,6 +38,7 @@ Jejak seperti goresan kuas atau ekor roket mengikuti cursor, lalu memudar dan hi
 | `trail` | `data-trail` | `false` | Aktifkan trail |
 | `trailColors` | `data-trail-colors` | `#ff9a3c,#ff2e63,#7b2ff7` | Titik-titik gradasi, dipisah koma (jumlah bebas, 1 = warna solid). Warna CSS apa pun, mis. `#f00,rgb(0,255,0),hsl(200 90% 60%)`. Di JS boleh berupa array |
 | `trailColorMode` | `data-trail-color-mode` | `age` | `age` = warna berubah menurut umur goresan (kepala ke ekor, seperti api roket). `flow` = warna mengalir sepanjang gerakan dan menempel di goresan (seperti kuas pelangi) |
+| `trailLength` | `data-trail-length` | `0` | **Panjang kuas** (px). Pendek = ekor singkat, panjang = ekor menjuntai. `0` = tanpa batas (hanya dibatasi `trailDuration`). Gradasi dan runcing menyesuaikan panjang ini; goresan hilang oleh batas mana pun yang tercapai lebih dulu |
 | `trailSize` | `data-trail-size` | `14` | Tebal maksimum (px) |
 | `trailDuration` | `data-trail-duration` | `900` | Lama goresan sampai hilang (ms) |
 | `trailTaper` | `data-trail-taper` | `0.8` | Seberapa runcing di ujung, 0 (tetap tebal) sampai 1 (lancip) |
@@ -46,11 +47,59 @@ Jejak seperti goresan kuas atau ekor roket mengikuti cursor, lalu memudar dan hi
 | `trailGlow` | `data-trail-glow` | `0.4` | Cahaya lembut di sekitar goresan, 0 sampai 1 |
 | `trailPressure` | `data-trail-pressure` | `0.3` | Efek tekanan stylus: gerak cepat = lebih tipis, pelan = lebih tebal. 0 = mati |
 | `trailFlowSpeed` | `data-trail-flow-speed` | `1` | Kecepatan pergantian warna (hanya mode `flow`) |
-| `trailBlend` | `data-trail-blend` | `normal` | `additive` = warna saling menambah terang, kesan neon |
+| `trailBlend` | `data-trail-blend` | `normal` | `additive` = warna saling menambah terang, kesan neon. Berlaku juga untuk partikel |
+
+## Percikan partikel
+
+Partikel kecil terlepas dari cursor sebanding jarak gerak, melesat ke belakang arah gerak (seperti percikan api roket) lalu mengecil dan memudar. Berjalan terpisah dari trail, jadi bisa dipakai sendiri.
+
+| Opsi (JS) | Atribut `data-*` | Default | Keterangan |
+|---|---|---|---|
+| `sparks` | `data-sparks` | `false` | Aktifkan percikan |
+| `sparkShape` | `data-spark-shape` | `dot` | `dot` titik, `spark` garis api, `star` bintang, `mix` campuran |
+| `sparkColors` | `data-spark-colors` | kosong | Warna percikan (daftar dipisah koma). Kosong = ikut gradasi `trailColors` |
+| `sparkRate` | `data-spark-rate` | `8` | Jumlah partikel per 100px gerakan |
+| `sparkSize` | `data-spark-size` | `3` | Ukuran (px) |
+| `sparkLife` | `data-spark-life` | `700` | Umur partikel (ms) |
+| `sparkSpeed` | `data-spark-speed` | `3` | Kecepatan lontar |
+| `sparkSpread` | `data-spark-spread` | `70` | Sebaran sudut (0 sampai 180 derajat). `180` = ke segala arah |
+| `sparkGravity` | `data-spark-gravity` | `0.3` | Positif = jatuh, negatif = melayang naik, `0` = tanpa gravitasi |
+
+## Efek klik
+
+Saklar utama: `ripple` (`data-ripple="false"` mematikan semua efek klik). Efek dipilih lewat `clickEffect`, boleh digabung dengan koma, mis. `data-click-effect="ripple,burst"`.
+
+| Efek | Tampilan |
+|---|---|
+| `ripple` | Cincin yang melebar dan memudar (bawaan) |
+| `double` | Dua cincin berurutan |
+| `pulse` | Lingkaran penuh yang melebar dan memudar |
+| `burst` | Semburan garis dan titik ke segala arah |
+| `confetti` | Konfeti warna-warni melambung lalu jatuh |
+| `sparkle` | Beberapa kilau bintang yang muncul lalu hilang |
+| `press` | Lingkaran cursor mengecil selama tombol mouse ditekan |
+| `none` | Tanpa efek |
+
+| Opsi (JS) | Atribut `data-*` | Default | Keterangan |
+|---|---|---|---|
+| `clickEffect` | `data-click-effect` | `ripple` | Daftar efek, dipisah koma |
+| `clickColors` | `data-click-colors` | kosong | Palet warna partikel (`burst`, `confetti`, `sparkle`). Kosong = `rippleColor`/`color` (confetti memakai palet pelangi) |
+| `clickCount` | `data-click-count` | `16` | Jumlah partikel |
+| `pressScale` | `data-press-scale` | `0.6` | Skala lingkaran saat efek `press` |
+
+`rippleSize`, `rippleDuration`, `rippleOpacity` berlaku untuk semua efek klik (ukuran sebar, lama, dan kepekatan). `rippleColor` dan `rippleWidth` untuk cincin.
+
+## Reduce motion
+
+| Opsi (JS) | Atribut `data-*` | Default | Keterangan |
+|---|---|---|---|
+| `reducedMotion` | `data-reduced-motion` | `respect` | `respect` = hormati pengaturan sistem. `ignore` = efek tetap tampil walau sistem meminta animasi dikurangi |
+
+Bila sistem meminta reduce motion (di Windows: Settings, Accessibility, Visual effects, Animation effects dimatikan), mode `respect` mematikan trail dan partikel, dan efek cincin menjadi fade statis tanpa gerak. Kalau efek terasa "tidak muncul", cek pengaturan ini atau pasang `data-reduced-motion="ignore"`.
 
 ## Preset
 
-`default`, `rocket`, `ink`, `neon`, `aurora`, `glass`.
+`default`, `rocket`, `ink`, `neon`, `aurora`, `stardust`, `glass`.
 
 ```html
 <script src="https://fixsarts.github.io/cursor/cursor.js" data-preset="neon"></script>
@@ -83,8 +132,9 @@ Lewat variabel global (sebelum script dimuat):
 | `FixsCursor.configure(opts)` | Ubah opsi langsung, tanpa memuat ulang |
 | `FixsCursor.enable()` / `.disable()` | Nyalakan / matikan sementara |
 | `FixsCursor.preset(name, opts?)` | Terapkan preset, `opts` opsional untuk menimpa sebagian |
-| `FixsCursor.clearTrail()` | Hapus goresan yang masih terlihat |
-| `FixsCursor.ripple(x, y, opts?)` | Munculkan ripple manual di koordinat layar (px) |
+| `FixsCursor.clearTrail()` | Hapus goresan dan partikel yang masih terlihat |
+| `FixsCursor.click(x, y, opts?)` | Jalankan efek klik manual di koordinat layar (px). `opts` bisa menimpa mis. `{ clickEffect: "burst" }`. `ripple()` adalah alias lama |
+| `FixsCursor.effects` | Daftar nama efek klik |
 | `FixsCursor.destroy()` | Hapus semua elemen dan listener |
 | `FixsCursor.options` | Salinan opsi yang sedang aktif |
 | `FixsCursor.defaults` | Salinan nilai bawaan semua opsi |
@@ -101,13 +151,19 @@ FixsCursor.configure({
   trailSize: 16, trailDuration: 1200, trailGlow: 0.35
 });
 
+// Trail pendek dengan percikan api dan efek klik semburan
+FixsCursor.configure({
+  trail: true, trailLength: 120, sparks: true, sparkShape: "spark",
+  clickEffect: "ripple,burst", clickColors: "#ffd23f,#ff7a00,#e01e37"
+});
+
 // Cursor kaca transparan
 FixsCursor.configure({ size: 32, opacity: 0.25, blur: 6 });
 ```
 
 ## Perilaku otomatis
 - Tidak aktif di layar sentuh atau perangkat tanpa mouse. Aktif lagi jika mouse tersambung.
-- `prefers-reduced-motion`: ripple dan trail dimatikan, cursor mengikuti tanpa animasi.
+- `prefers-reduced-motion`: lihat bagian Reduce motion di atas.
 - Di input teks, textarea, dan `contenteditable` lingkaran disembunyikan dan cursor bawaan dipakai.
 - Elemen `disabled` atau `aria-disabled="true"` tidak memicu efek hover.
 - Trail putus (tidak menyambung) saat cursor keluar jendela atau melewati kolom teks, dan berhenti merender sepenuhnya saat semua goresan sudah hilang.
