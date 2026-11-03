@@ -1,7 +1,7 @@
-/*! fixs.arts Custom Cursor v1.2.0 | MIT | https://github.com/fixsarts/cursor */
+/*! fixs.arts Custom Cursor v1.3.0 | MIT | https://github.com/fixsarts/cursor */
 (() => {
   "use strict";
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   if (window.FixsCursor && window.FixsCursor.version) return; // aman bila dimuat dua kali
 
   const SCRIPT = document.currentScript;
@@ -15,6 +15,8 @@
     hoverEffect: true, hoverScale: 1.8, hideNativeCursor: false,
     reducedMotion: "respect", // "respect" = efek gerak dikurangi bila sistem meminta; "ignore" = selalu tampil
     preset: "",
+    // sentuhan (layar sentuh), tombol on/off, simpan status
+    touch: true, touchDot: true, touchHaptic: false, remember: false, toggle: false, togglePosition: "bottom-right", toggleLabel: "Fixs Cursor",
     // trail (efek kuas)
     trail: false, trailColors: "#ff9a3c,#ff2e63,#7b2ff7", trailColorMode: "age", trailLength: 0,
     trailSize: 14, trailDuration: 900, trailTaper: 0.8, trailFade: 1, trailOpacity: 0.9,
@@ -65,6 +67,14 @@
   const NATIVE_CSS = `html.fx-cursor-hide,html.fx-cursor-hide *{cursor:none !important}
     html.fx-cursor-hide :is(input:not([type=button]):not([type=submit]):not([type=reset]):not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,[contenteditable=""],[contenteditable="true"]){cursor:auto !important}`;
 
+  const TCSS = `
+    :host{all:initial}*{box-sizing:border-box}
+    button{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:9px;padding:10px 14px 10px 12px;border-radius:999px;background:rgba(18,18,26,.8);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);color:#f4f4f8;font:600 12.5px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;border:1px solid rgba(255,255,255,.16);box-shadow:0 8px 28px rgba(0,0,0,.3);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .2s ease}
+    button:active{transform:scale(.95)}button:focus-visible{outline:2px solid #8f7bff;outline-offset:2px}
+    i{width:9px;height:9px;border-radius:50%;background:#7c7c8c;transition:background .2s,box-shadow .2s}
+    button[aria-pressed=true] i{background:#37e08a;box-shadow:0 0 10px #37e08a}
+    em{font-style:normal;opacity:.6;min-width:1.7em}`;
+
   // ---- Util ----
   const mqFine = matchMedia("(any-hover: hover) and (any-pointer: fine)");
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
@@ -102,6 +112,7 @@
   let host, shadow, pos, undoCss, undoNative, listeners = [];
   let x = 0, y = 0, tx = 0, ty = 0, raf = 0, seen = false, shown = false, hover = false, inText = false, pressed = false;
   const ripples = new Set();
+  let isTouch = false, tdown = null, tgl = null;
   // kanvas efek (trail + partikel)
   let tcv = null, tctx = null, tW = 0, tH = 0, traf = 0, lastF = 0, headD = 0;
   let pts = [], parts = [], dist = 0, brk = true, sbrk = true, sx = 0, sy = 0, sacc = 0;
@@ -118,7 +129,7 @@
     pos.classList.toggle("hv", hover && opts.hoverEffect);
     pos.classList.toggle("pr", pressed && opts.ripple && effects(opts.clickEffect).includes("press"));
     pos.classList.toggle("gl", opts.blur > 0);
-    pos.classList.toggle("nd", !opts.dot);
+    pos.classList.toggle("nd", !opts.dot || (isTouch && !opts.touchDot));
   };
   const apply = () => {
     if (!host) return;
@@ -414,13 +425,14 @@
     document.documentElement.append(host);
     const cap = { capture: true, passive: true };
     on(document, "pointermove", (e) => {
-      if (e.pointerType !== "mouse") { shown = false; breakStroke(); setState(); return; }
+      if (e.pointerType === "touch") return; // sentuhan ditangani touch events di bawah
+      if (isTouch) { isTouch = false; breakStroke(); }
       tx = e.clientX; ty = e.clientY;
       if (!seen) { x = tx; y = ty; seen = true; }
       shown = true; setState(); kick();
     }, cap);
     on(document, "pointerover", (e) => {
-      if (e.pointerType !== "mouse") return;
+      if (e.pointerType === "touch") return;
       const t = e.composedPath()[0], el = t && (t.nodeType === 1 ? t : t.parentElement);
       if (!el) return;
       try {
@@ -432,7 +444,7 @@
       setState();
     }, cap);
     on(document, "pointerdown", (e) => {
-      if (e.pointerType !== "mouse" || !opts.ripple) return;
+      if (e.pointerType === "touch" || !opts.ripple) return;
       pressed = true; setState(); clickFx(e.clientX, e.clientY);
     }, cap);
     on(document, "pointerup", release, cap);
@@ -441,6 +453,31 @@
     on(document.documentElement, "mouseleave", () => { shown = false; breakStroke(); setState(); });
     on(document.documentElement, "mouseenter", () => { shown = true; setState(); });
     on(window, "resize", fxSize, { passive: true });
+    // ---- Sentuhan: jari = cursor. Pakai touch events supaya tetap terbaca saat halaman di-scroll ----
+    on(document, "touchstart", (e) => {
+      if (!opts.touch || !e.touches.length) return;
+      const t = e.touches[0];
+      isTouch = true; inText = false; hover = false;
+      tx = x = t.clientX; ty = y = t.clientY; seen = shown = pressed = true;
+      tdown = { x: tx, y: ty, t: performance.now(), moved: false };
+      breakStroke(); setState(); kick();
+    }, cap);
+    on(document, "touchmove", (e) => {
+      if (!isTouch || !opts.touch || !e.touches.length) return;
+      const t = e.touches[0]; tx = t.clientX; ty = t.clientY; shown = true;
+      if (tdown && Math.hypot(tx - tdown.x, ty - tdown.y) > 12) tdown.moved = true;
+      setState(); kick();
+    }, cap);
+    const tend = (e, cancel) => {
+      if (!isTouch || (e.touches && e.touches.length)) return;
+      const d = tdown; tdown = null; pressed = false; shown = false; breakStroke(); setState();
+      if (!cancel && opts.touch && opts.ripple && d && !d.moved && performance.now() - d.t < 500) { // tap = efek klik
+        clickFx(d.x, d.y);
+        if (opts.touchHaptic && navigator.vibrate) try { navigator.vibrate(8); } catch (err) {}
+      }
+    };
+    on(document, "touchend", (e) => tend(e, false), cap);
+    on(document, "touchcancel", (e) => tend(e, true), cap);
     apply();
   };
   const unmount = () => {
@@ -450,9 +487,39 @@
     fxRemove(); // host dilepas di bawah, kanvas ikut hilang
     undoCss && undoCss(); undoNative && undoNative();
     document.documentElement.classList.remove("fx-cursor-hide");
-    host && host.remove(); host = shadow = pos = null; seen = shown = hover = inText = pressed = false;
+    host && host.remove(); host = shadow = pos = null; seen = shown = hover = inText = pressed = false; isTouch = false; tdown = null;
   };
-  const sync = () => { if (started && enabled && mqFine.matches) mount(); else unmount(); };
+  const hasTouch = () => (navigator.maxTouchPoints || 0) > 0 || "ontouchstart" in window;
+  const sync = () => { if (started && enabled && (mqFine.matches || (opts.touch && hasTouch()))) mount(); else unmount(); };
+  const KEY = "fixscursor:enabled";
+  const store = (v) => { try { v == null ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, v ? "1" : "0"); } catch (e) {} };
+  const stored = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+  // Tombol on/off melayang (opsional, data-toggle="true"), hidup terpisah dari cursor supaya tetap ada saat efek mati
+  const tglUI = () => {
+    if (!(started && opts.toggle)) { if (tgl) { tgl.undo(); tgl.host.remove(); tgl = null; } return; }
+    if (!tgl) {
+      const h = document.createElement("div"), sh = h.attachShadow({ mode: "closed" }), b = document.createElement("button");
+      h.setAttribute("data-fixs-cursor-toggle", ""); b.type = "button"; b.setAttribute("aria-label", "Nyalakan atau matikan efek kursor dan sentuhan");
+      const dot = document.createElement("i"), lb = document.createElement("span"), st = document.createElement("em");
+      b.append(dot, lb, st); const undo = addSheet(sh, TCSS); sh.append(b);
+      b.addEventListener("click", () => api.toggle());
+      document.documentElement.append(h); tgl = { host: h, b, lb, st, undo };
+    }
+    const s = tgl.host.style, p = String(opts.togglePosition).toLowerCase(), v = p.includes("top") ? "top" : "bottom", z = p.includes("left") ? "left" : "right";
+    s.setProperty("all", "initial"); s.setProperty("position", "fixed"); s.setProperty("z-index", String(opts.zIndex));
+    ["top", "bottom", "left", "right"].forEach((k) => s.setProperty(k, "auto"));
+    s.setProperty(v, "calc(16px + env(safe-area-inset-" + v + ", 0px))"); s.setProperty(z, "calc(16px + env(safe-area-inset-" + z + ", 0px))");
+    tgl.lb.textContent = opts.toggleLabel; tgl.st.textContent = enabled ? "On" : "Off"; tgl.b.setAttribute("aria-pressed", String(enabled));
+  };
+  const setEnabled = (v) => {
+    v = !!v;
+    if (v !== enabled) {
+      enabled = v; if (opts.remember) store(v);
+      sync();
+      try { window.dispatchEvent(new CustomEvent("fixscursor:change", { detail: { enabled } })); } catch (e) {}
+    }
+    tglUI();
+  };
   const onMq = () => sync();
   mqFine.addEventListener("change", onMq);
 
@@ -463,15 +530,18 @@
     get defaults() { return { ...DEFAULTS }; },
     get presets() { return Object.keys(PRESETS); },
     get effects() { return Object.keys(CLICK).concat("press"); },
-    init(o) { opts = { ...opts, ...pick(o) }; started = true; sync(); apply(); return api; },
-    configure(o) { opts = { ...opts, ...pick(o) }; apply(); return api; },
+    init(o) { opts = { ...opts, ...pick(o) }; started = true; if (opts.remember && stored() === "0") enabled = false; sync(); apply(); tglUI(); return api; },
+    configure(o) { opts = { ...opts, ...pick(o) }; if (o && "remember" in o) store(opts.remember ? enabled : null); sync(); apply(); tglUI(); return api; },
     preset(name, o) { return api.configure({ ...o, preset: name }); },
     clearTrail() { fxClear(); return api; },
-    enable() { enabled = true; sync(); return api; },
-    disable() { enabled = false; sync(); return api; },
+    enable() { setEnabled(true); return api; },
+    disable() { setEnabled(false); return api; },
+    toggle() { setEnabled(!enabled); return api; },
+    get enabled() { return enabled; },
+    get touchSupported() { return hasTouch(); },
     click(cx, cy, o) { clickFx(cx, cy, o); return api; },
     ripple(cx, cy, o) { clickFx(cx, cy, o); return api; },
-    destroy() { started = false; unmount(); mqFine.removeEventListener("change", onMq); delete window.FixsCursor; }
+    destroy() { started = false; unmount(); tglUI(); mqFine.removeEventListener("change", onMq); delete window.FixsCursor; }
   };
   window.FixsCursor = api;
   if (!SCRIPT || SCRIPT.dataset.auto !== "false") api.init();

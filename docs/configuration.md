@@ -89,6 +89,20 @@ Saklar utama: `ripple` (`data-ripple="false"` mematikan semua efek klik). Efek d
 
 `rippleSize`, `rippleDuration`, `rippleOpacity` berlaku untuk semua efek klik (ukuran sebar, lama, dan kepekatan). `rippleColor` dan `rippleWidth` untuk cincin.
 
+## Sentuhan dan tombol on/off
+
+| Opsi (JS) | Atribut `data-*` | Default | Keterangan |
+|---|---|---|---|
+| `touch` | `data-touch` | `true` | Jari di layar sentuh ikut diberi efek (trail, percikan, efek klik saat tap). `false` = hanya mouse |
+| `touchDot` | `data-touch-dot` | `true` | Tampilkan lingkaran di titik sentuh. `false` = hanya trail dan efek |
+| `touchHaptic` | `data-touch-haptic` | `false` | Getar singkat saat tap (Android) |
+| `toggle` | `data-toggle` | `false` | Tampilkan tombol on/off melayang |
+| `togglePosition` | `data-toggle-position` | `bottom-right` | `bottom-right`, `bottom-left`, `top-right`, `top-left` |
+| `toggleLabel` | `data-toggle-label` | `Efek kursor` | Teks pada tombol |
+| `remember` | `data-remember` | `false` | Simpan status on/off di `localStorage` |
+
+Efek klik pada sentuhan muncul saat **tap** (jari tidak bergeser), jadi menggeser halaman tidak memicu ledakan efek. Event `fixscursor:change` dikirim ke `window` setiap status on/off berubah (`event.detail.enabled`).
+
 ## Reduce motion
 
 | Opsi (JS) | Atribut `data-*` | Default | Keterangan |
@@ -130,7 +144,9 @@ Lewat variabel global (sebelum script dimuat):
 |---|---|
 | `FixsCursor.init(opts?)` | Mulai (otomatis dipanggil kecuali `data-auto="false"`) |
 | `FixsCursor.configure(opts)` | Ubah opsi langsung, tanpa memuat ulang |
-| `FixsCursor.enable()` / `.disable()` | Nyalakan / matikan sementara |
+| `FixsCursor.enable()` / `.disable()` / `.toggle()` | Nyalakan / matikan / balikkan |
+| `FixsCursor.enabled` | `true` bila sedang menyala |
+| `FixsCursor.touchSupported` | `true` bila perangkat punya layar sentuh |
 | `FixsCursor.preset(name, opts?)` | Terapkan preset, `opts` opsional untuk menimpa sebagian |
 | `FixsCursor.clearTrail()` | Hapus goresan dan partikel yang masih terlihat |
 | `FixsCursor.click(x, y, opts?)` | Jalankan efek klik manual di koordinat layar (px). `opts` bisa menimpa mis. `{ clickEffect: "burst" }`. `ripple()` adalah alias lama |
@@ -162,7 +178,7 @@ FixsCursor.configure({ size: 32, opacity: 0.25, blur: 6 });
 ```
 
 ## Perilaku otomatis
-- Tidak aktif di layar sentuh atau perangkat tanpa mouse. Aktif lagi jika mouse tersambung.
+- Di layar sentuh, efek mengikuti jari (lihat bagian Sentuhan). Atur `data-touch="false"` untuk mematikannya.
 - `prefers-reduced-motion`: lihat bagian Reduce motion di atas.
 - Di input teks, textarea, dan `contenteditable` lingkaran disembunyikan dan cursor bawaan dipakai.
 - Elemen `disabled` atau `aria-disabled="true"` tidak memicu efek hover.

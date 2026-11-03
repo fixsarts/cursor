@@ -7,6 +7,8 @@ Demo: https://fixsarts.github.io/cursor/demo/
 ## Fitur
 - **Trail menggambar**: goresan halus mengikuti cursor, gradasi warna bebas (1 sampai banyak warna), runcing di ujung, glow, efek tekanan stylus, lalu memudar dan hilang sendiri. Tersedia preset `rocket`, `ink`, `neon`, `aurora`, `stardust`.
 - **Panjang kuas bisa diatur** (`trailLength`): dari ekor pendek sampai menjuntai.
+- **Sentuhan (touch) di smartphone**: jari = cursor. Trail, percikan, dan efek klik ikut hidup saat geser atau tap, tetap jalan walau halaman di-scroll.
+- **Fleksibel on/off**: `FixsCursor.toggle()`, tombol melayang bawaan (`data-toggle="true"`), dan status bisa diingat (`data-remember="true"`).
 - **Percikan partikel** saat cursor bergerak: titik, garis api, bintang, atau campuran, lengkap dengan arah, kecepatan, dan gravitasi.
 - **7 efek klik**: `ripple`, `double`, `pulse`, `burst`, `confetti`, `sparkle`, `press`, bisa digabung.
 - **Transparan dan glass**: atur `opacity`, `hoverOpacity`, dan `blur` (backdrop blur) pada lingkaran.
@@ -14,7 +16,7 @@ Demo: https://fixsarts.github.io/cursor/demo/
 - Ripple saat klik, beberapa klik berurutan aman, elemen dihapus setelah animasi.
 - Efek hover (cursor membesar) di link, tombol, dan elemen interaktif.
 - Shadow DOM: tidak bentrok dengan CSS website, tidak mengubah `body` atau `html` secara default, `pointer-events: none`.
-- Otomatis nonaktif di layar sentuh, menghormati `prefers-reduced-motion`, aman dimuat dua kali.
+- Layar sentuh kini didukung (matikan dengan `data-touch="false"`), menghormati `prefers-reduced-motion`, aman dimuat dua kali.
 
 ## Pasang (paling sederhana)
 Tambahkan sebelum `</body>` (atau di `<head>`):
@@ -75,7 +77,7 @@ cursor/
 ├── cursor.js            versi terbaru (URL tetap)
 ├── releases/1.0.0/      salinan beku tiap versi
 ├── releases/1.1.0/
-├── releases/1.2.0/
+├── releases/1.3.0/
 ├── demo/                halaman demo (memakai ../cursor.js)
 ├── docs/configuration.md
 ├── README.md
@@ -90,14 +92,14 @@ cursor/
 
 ## Versi dan update
 - **Latest**: `https://fixsarts.github.io/cursor/cursor.js`. Website pengguna otomatis dapat pembaruan setelah `cursor.js` diganti (GitHub Pages menyimpan cache sekitar 10 menit).
-- **Versi tetap (Pages)**: `https://fixsarts.github.io/cursor/releases/1.2.0/cursor.js`
+- **Versi tetap (Pages)**: `https://fixsarts.github.io/cursor/releases/1.3.0/cursor.js`
 - **Rilis baru**: ubah `VERSION` dan komentar versi di `cursor.js`, salin ke `releases/<versi>/cursor.js`, commit, lalu buat tag Git `v<versi>`.
 - Gunakan versi tetap untuk website penting, latest untuk website yang ingin selalu terbaru.
 
 ## CDN (jsDelivr)
 jsDelivr mengambil langsung dari repo GitHub (perlu tag rilis, mis. `v1.0.0`):
 ```html
-<script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1.2.0/cursor.js"></script> <!-- versi tetap -->
+<script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1.3.0/cursor.js"></script> <!-- versi tetap -->
 <script src="https://cdn.jsdelivr.net/gh/fixsarts/cursor@1/cursor.js"></script>     <!-- terbaru 1.x -->
 ```
 Jangan pakai `@main` di produksi (cache bisa lama).
@@ -115,11 +117,12 @@ Jangan pakai `@main` di produksi (cache bisa lama).
 - Tidak bekerja di dalam `<iframe>` (pasang script di tiap halaman iframe yang sama origin).
 - Situs dengan CSP yang melarang script dari `fixsarts.github.io` harus mengizinkannya di `script-src`.
 - `dialog.showModal()` dan elemen top-layer menutupi cursor kustom.
-- Perangkat hibrida: hanya gerakan mouse yang diikuti, sentuhan diabaikan.
+- Perangkat hibrida: mouse dan jari sama-sama diikuti. Getar (`touchHaptic`) hanya jalan di browser yang mendukung `navigator.vibrate` (Android, bukan iOS).
 - Ripple memerlukan Web Animations API (semua browser modern).
 
 ## Changelog
-- **1.2.0**: percikan partikel, 7 efek klik (`ripple`, `double`, `pulse`, `burst`, `confetti`, `sparkle`, `press`), `trailLength` (panjang kuas), opsi `reducedMotion`, preset `stardust`, `FixsCursor.click()`. Perbaikan: cincin ripple tidak lagi memudar terlalu cepat, dan ripple tetap tampil (fade statis) saat sistem meminta reduce motion.
+- **1.3.0**: dukungan sentuhan (touch) untuk smartphone/tablet, opsi `touch`, `touchDot`, `touchHaptic`, tombol on/off melayang (`toggle`, `togglePosition`, `toggleLabel`), `remember` (simpan status), API `toggle()`, `enabled`, event `fixscursor:change`. Demo didesain ulang dengan tab, mode terang/gelap, tombol acak, dan salin script.
+- **1.3.0**: percikan partikel, 7 efek klik (`ripple`, `double`, `pulse`, `burst`, `confetti`, `sparkle`, `press`), `trailLength` (panjang kuas), opsi `reducedMotion`, preset `stardust`, `FixsCursor.click()`. Perbaikan: cincin ripple tidak lagi memudar terlalu cepat, dan ripple tetap tampil (fade statis) saat sistem meminta reduce motion.
 - **1.1.0**: trail menggambar (gradasi, glow, tekanan, mode `age`/`flow`), preset, `opacity`/`hoverOpacity`/`blur`/`dot`, `rippleOpacity`, API `preset()`/`clearTrail()`. Semua opsi lama tetap kompatibel.
 - **1.0.0**: rilis pertama.
 

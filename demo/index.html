@@ -2,123 +2,60 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>fixs.arts Custom Cursor: Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>fixs.arts Cursor: Mouse dan Sentuhan</title>
 <link rel="stylesheet" href="style.css">
-<!-- Demo memakai library utama yang sama persis dengan yang dipasang di website lain -->
-<script src="../cursor.js"></script>
+<!-- Demo memakai library yang sama persis dengan yang dipasang di website lain.
+     data-toggle menampilkan tombol on/off melayang, data-touch mengaktifkan efek sentuhan. -->
+<script src="../cursor.js" data-preset="rocket" data-toggle="true" data-remember="true"></script>
 </head>
 <body>
-<header class="top"><b>Custom Cursor</b><a href="https://github.com/fixsarts/cursor">GitHub</a></header>
-
-<main>
-  <section class="hero">
-    <h1>Cursor kustom untuk website mana pun.</h1>
-    <p>Satu script tag. Gerakkan mouse dan lihat jejaknya, klik di mana saja, dan arahkan ke tombol atau link.</p>
-    <div class="row"><button class="btn primary" type="button">Tombol utama</button><button class="btn" type="button">Tombol biasa</button><a class="btn" href="#demo-form">Link</a><button class="btn" type="button" disabled>Nonaktif</button></div>
-  </section>
-
-  <section class="stage" aria-label="Area uji efek">
-    <span>Gerakkan dan klik di area gelap ini</span>
-  </section>
-
-  <div class="cols">
-    <section class="card" id="panel" aria-labelledby="ph">
-      <h2 id="ph">Konfigurasi</h2>
-      <p class="note" id="rm-note" hidden>Sistem lu mengaktifkan <b>reduce motion</b>, jadi trail dan partikel dimatikan (ripple tampil sebagai fade statis). <button class="chip" type="button" id="rm-ignore">Abaikan untuk demo ini</button></p>
-
-      <h3>Preset</h3>
-      <div class="chips" id="presets"></div>
-
-      <h3>Cursor dan transparansi</h3>
-      <label>Warna cursor <input type="color" data-k="color" value="#3330ff"></label>
-      <label>Ukuran <output></output><input type="range" data-k="size" min="4" max="64" value="18"></label>
-      <label>Transparansi (opacity) <output></output><input type="range" data-k="opacity" min="0.05" max="1" step="0.01" value="1"></label>
-      <label>Opacity hover (-1 = sama) <output></output><input type="range" data-k="hoverOpacity" min="-1" max="1" step="0.01" value="-1"></label>
-      <label>Blur kaca (glass) <output></output><input type="range" data-k="blur" min="0" max="20" step="1" value="0"></label>
-      <label>Kehalusan gerak <output></output><input type="range" data-k="smoothing" min="0.05" max="1" step="0.01" value="0.22"></label>
-      <label>Skala hover <output></output><input type="range" data-k="hoverScale" min="1" max="4" step="0.1" value="1.8"></label>
-      <label class="chk"><input type="checkbox" data-k="dot" checked> Tampilkan lingkaran</label>
-      <label class="chk"><input type="checkbox" data-k="hoverEffect" checked> Efek hover</label>
-      <label class="chk"><input type="checkbox" data-k="hideNativeCursor"> Sembunyikan cursor bawaan</label>
-      <label>Reduce motion sistem
-        <select data-k="reducedMotion"><option value="respect">Ikuti sistem</option><option value="ignore">Abaikan (selalu tampil)</option></select>
-      </label>
-
-      <h3>Trail (kuas)</h3>
-      <label class="chk"><input type="checkbox" data-k="trail"> Aktifkan trail</label>
-      <label>Panjang kuas (px, 0 = bebas) <output></output><input type="range" data-k="trailLength" min="0" max="1000" step="10" value="0"></label>
-      <div class="stops-head">Gradasi warna <output id="stops-out"></output></div>
-      <div class="gradbar" id="gradbar"></div>
-      <div class="stops" id="stops">
-        <input type="color" data-stop value="#ff9a3c" aria-label="Warna 1">
-        <input type="color" data-stop value="#ff2e63" aria-label="Warna 2">
-        <input type="color" data-stop value="#7b2ff7" aria-label="Warna 3">
-        <input type="color" data-stop value="#4a0a3d" aria-label="Warna 4">
-        <input type="color" data-stop value="#00f0ff" aria-label="Warna 5">
-      </div>
-      <label>Jumlah warna <output></output><input type="range" data-n="stops" min="1" max="5" value="3"></label>
-      <label>Mode gradasi
-        <select data-k="trailColorMode"><option value="age">Mengikuti umur (api roket)</option><option value="flow">Mengalir (pelangi kuas)</option></select>
-      </label>
-      <label>Tebal maksimum <output></output><input type="range" data-k="trailSize" min="2" max="48" value="14"></label>
-      <label>Lama menghilang (ms) <output></output><input type="range" data-k="trailDuration" min="200" max="3000" step="50" value="900"></label>
-      <label>Runcing di ujung <output></output><input type="range" data-k="trailTaper" min="0" max="1" step="0.05" value="0.8"></label>
-      <label>Kecepatan pudar <output></output><input type="range" data-k="trailFade" min="0" max="3" step="0.05" value="1"></label>
-      <label>Opacity trail <output></output><input type="range" data-k="trailOpacity" min="0.05" max="1" step="0.01" value="0.9"></label>
-      <label>Glow <output></output><input type="range" data-k="trailGlow" min="0" max="1" step="0.05" value="0.4"></label>
-      <label>Tekanan kuas (cepat = tipis) <output></output><input type="range" data-k="trailPressure" min="0" max="1" step="0.05" value="0.3"></label>
-      <label>Kecepatan aliran warna <output></output><input type="range" data-k="trailFlowSpeed" min="0.1" max="4" step="0.1" value="1"></label>
-      <label>Blend (trail dan partikel)
-        <select data-k="trailBlend"><option value="normal">Normal</option><option value="additive">Additive (menyala)</option></select>
-      </label>
-
-      <h3>Percikan partikel</h3>
-      <label class="chk"><input type="checkbox" data-k="sparks"> Aktifkan percikan saat bergerak</label>
-      <label>Bentuk
-        <select data-k="sparkShape"><option value="dot">Titik</option><option value="spark">Garis api</option><option value="star">Bintang</option><option value="mix">Campur</option></select>
-      </label>
-      <label>Jumlah per 100px <output></output><input type="range" data-k="sparkRate" min="1" max="30" step="1" value="8"></label>
-      <label>Ukuran <output></output><input type="range" data-k="sparkSize" min="1" max="14" step="0.5" value="3"></label>
-      <label>Umur (ms) <output></output><input type="range" data-k="sparkLife" min="200" max="2000" step="50" value="700"></label>
-      <label>Kecepatan lontar <output></output><input type="range" data-k="sparkSpeed" min="0" max="8" step="0.1" value="3"></label>
-      <label>Sebaran sudut (derajat) <output></output><input type="range" data-k="sparkSpread" min="0" max="180" step="5" value="70"></label>
-      <label>Gravitasi (minus = naik) <output></output><input type="range" data-k="sparkGravity" min="-1" max="1" step="0.05" value="0.3"></label>
-
-      <h3>Efek klik</h3>
-      <label class="chk"><input type="checkbox" data-k="ripple" checked> Aktifkan efek klik</label>
-      <div class="chips" id="fxchips"></div>
-      <label>Warna cincin <input type="color" data-k="rippleColor" value="#3330ff"></label>
-      <div class="stops-head">Palet partikel klik</div>
-      <div class="stops" id="cstops">
-        <input type="color" data-cstop value="#ff6b00" aria-label="Palet 1">
-        <input type="color" data-cstop value="#e01e37" aria-label="Palet 2">
-        <input type="color" data-cstop value="#ffd23f" aria-label="Palet 3">
-      </div>
-      <label>Ukuran efek <output></output><input type="range" data-k="rippleSize" min="30" max="240" value="90"></label>
-      <label>Durasi (ms) <output></output><input type="range" data-k="rippleDuration" min="200" max="1500" step="50" value="600"></label>
-      <label>Tebal garis cincin <output></output><input type="range" data-k="rippleWidth" min="1" max="8" value="2"></label>
-      <label>Opacity efek <output></output><input type="range" data-k="rippleOpacity" min="0.05" max="1" step="0.01" value="0.8"></label>
-      <label>Jumlah partikel <output></output><input type="range" data-k="clickCount" min="4" max="60" step="1" value="16"></label>
-      <label>Skala saat ditekan (press) <output></output><input type="range" data-k="pressScale" min="0.2" max="1" step="0.05" value="0.6"></label>
-
-      <div class="row"><button class="btn" type="button" id="reset">Reset</button><button class="btn primary" type="button" id="copy">Salin script</button></div>
-    </section>
-
-    <div class="side">
-      <section class="card" id="demo-form" aria-labelledby="fh">
-        <h2 id="fh">Uji input</h2>
-        <p class="muted">Cursor bawaan tetap muncul di kolom teks agar mengetik tetap nyaman.</p>
-        <label>Nama <input type="text" placeholder="Ketik di sini"></label>
-        <label>Pesan <textarea rows="3" placeholder="Pesan"></textarea></label>
-        <label>Pilihan <select><option>Satu</option><option>Dua</option></select></label>
-        <label class="chk"><input type="checkbox"> Centang saya</label>
-        <h2>Kode pemasangan</h2>
-        <pre id="code" aria-live="polite"></pre>
-      </section>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><span class="logo"></span>fixs.arts <b>Cursor</b><small>v1.3</small></a>
+    <div class="nav-r">
+      <button class="switch" id="master" type="button" role="switch" aria-checked="true"><span class="knob"></span><span class="sl">Efek <b id="master-t">On</b></span></button>
+      <button class="icon" id="theme" type="button" aria-label="Ganti tema terang atau gelap"></button>
+      <a class="icon" href="https://github.com/fixsarts/cursor" aria-label="GitHub" target="_blank" rel="noopener">GH</a>
     </div>
   </div>
+</header>
+
+<main class="wrap" id="top">
+  <section class="hero">
+    <span class="badge" id="mode">Mouse</span>
+    <h1>Cursor yang hidup di mouse <em>dan jari.</em></h1>
+    <p>Satu script tag. Efek trail, percikan, dan klik ikut bereaksi saat lu geser atau tap di smartphone, bukan cuma di desktop. Semuanya bisa dinyalakan atau dimatikan kapan saja.</p>
+    <div class="row"><button class="btn primary" type="button" data-copy>Salin script</button><a class="btn" href="#studio">Atur gaya</a></div>
+  </section>
+
+  <section class="stage" id="stage" aria-label="Area uji efek"><span>Gerakkan mouse atau geser jari di sini</span><button class="btn ghost" id="rand" type="button">Acak gaya</button></section>
+  <div class="chips" id="presets" role="group" aria-label="Preset"></div>
+
+  <div class="studio" id="studio">
+    <section class="card panel">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div id="pages"></div>
+      <div class="row"><button class="btn" id="reset" type="button">Reset</button></div>
+    </section>
+
+    <aside class="card install">
+      <div class="ih"><h2>Kode pemasangan</h2>
+        <div class="seg" id="fmt"><button type="button" data-f="html" aria-pressed="true">HTML</button><button type="button" data-f="js" aria-pressed="false">JavaScript</button></div>
+      </div>
+      <pre id="code" aria-live="polite"></pre>
+      <button class="btn primary wide" type="button" data-copy>Salin script</button>
+      <p class="muted">Tempel sebelum <code>&lt;/body&gt;</code>. Kode hanya memuat opsi yang berbeda dari bawaan.</p>
+      <h3>Uji input</h3>
+      <label class="f"><span>Nama</span><input type="text" placeholder="Ketik di sini"></label>
+      <label class="f"><span>Pesan</span><textarea rows="2" placeholder="Pesan"></textarea></label>
+      <div class="row"><button class="btn" type="button">Tombol</button><a class="btn" href="#top">Link</a><button class="btn" type="button" disabled>Nonaktif</button></div>
+    </aside>
+  </div>
+  <footer>MIT License. Dibuat oleh fixs.arts.</footer>
 </main>
+<div class="toast" id="toast" role="status"></div>
 <script src="demo.js"></script>
 </body>
 </html>
